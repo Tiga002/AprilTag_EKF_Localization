@@ -1,0 +1,6 @@
+<launch>
+        <node pkg="apriltag_ekf_localization" name="ekf_localization_node" type="ekf_localization_node" output="screen">
+            <param name="duration_time" type="double" value="0.05" />
+            <param name="road_sign_config_file" type="str" value="$(find apriltag_ekf_localization)/config/road_sign_config_file.json" />
+        </node>
+</launch>
