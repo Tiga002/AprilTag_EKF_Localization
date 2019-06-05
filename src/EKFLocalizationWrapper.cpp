@@ -70,10 +70,10 @@ void EKFLocalizationNode::onWheelSpeed(const std_msgs::Float64::ConstPtr &msg)
 	std::cout << "Wheel Speed Received  ~~~" << std::endl;
 }
 
-void EKFLocalizationNode::onIMU(const sensor_msgs::Imu::ConstPtr &msg)
+void EKFLocalizationNode::onIMU(const std_msgs::Float64::ConstPtr &msg)
 {
 	std::lock_guard<std::mutex> guard(imu_mutex_);
-	yaw_rate_ = msg->angular_velocity.z;
+	yaw_rate_ = msg->data;
 	// debug
 	std::cout << "IMU Yaw Rate Received ~~~" << std::endl;
 }

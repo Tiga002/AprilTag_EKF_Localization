@@ -46,7 +46,7 @@ private:
     /**
     * @brief: CallBack Function for IMU 
     **/
-    void onIMU(const sensor_msgs::Imu::ConstPtr &msg);
+    void onIMU(const std_msgs::Float64::ConstPtr &msg);
 
     /**
     * @brief: CallBack function for SteeringAngle Command
