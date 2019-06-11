@@ -347,11 +347,11 @@ void EKFLocalizer::Predict(const double& wheel_speed, const double& yaw_rate, co
 	Ft_.setZero();
 	Ft_(0,0) = 1;
 	Ft_(0,1) = 0;
-	Ft_(0,2) = -wheel_speed*sin(heading + steering_angle);
+        Ft_(0,2) = -wheel_speed*sin(heading + steering_angle)*dt;
 
 	Ft_(1,0) = 0;
 	Ft_(1,1) = 1;
-	Ft_(1,2) = wheel_speed*cos(heading + steering_angle);
+        Ft_(1,2) = wheel_speed*cos(heading + steering_angle)*dt;
 
 	Ft_(2,0) = 0;
 	Ft_(2,1) = 0;
@@ -359,9 +359,9 @@ void EKFLocalizer::Predict(const double& wheel_speed, const double& yaw_rate, co
 
 	// 2. Prediction :: directly using the equation of motion
 	// X
-	Xt_(0,0) += wheel_speed * cos(heading + steering_angle);
+        Xt_(0,0) += wheel_speed*dt * cos(heading + steering_angle);
 	// Y
-	Xt_(1,0) += wheel_speed * sin(heading + steering_angle);
+        Xt_(1,0) += wheel_speed*dt * sin(heading + steering_angle);
 	// Heading :: the current heading
 	Xt_(2,0) = heading;
 
@@ -376,12 +376,12 @@ void EKFLocalizer::Predict(const double& wheel_speed, const double& yaw_rate, co
 	// 4. Define the Mapping Jacobian Matrix Lt 
 	Eigen::Matrix<double, 3, 3> Lt_;
 	Lt_.setZero();
-	Lt_(0,0) = cos(heading + steering_angle);
-	Lt_(0,1) = -sin(heading + steering_angle);
+        Lt_(0,0) = cos(heading + steering_angle) * dt;
+        Lt_(0,1) = -sin(heading + steering_angle) * dt;
 	Lt_(0,2) = 0;
 
-	Lt_(1,0) = sin(heading + steering_angle);
-	Lt_(1,1) = cos(heading + steering_angle);
+        Lt_(1,0) = sin(heading + steering_angle) * dt;
+        Lt_(1,1) = cos(heading + steering_angle) * dt;
 	Lt_(1,2) = 0;
 
 	Lt_(2,0) = 0;

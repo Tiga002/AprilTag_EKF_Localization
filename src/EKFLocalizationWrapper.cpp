@@ -44,7 +44,7 @@ bool EKFLocalizationNode::init()
 	std::cout << "ekf_localizer_ initialization succeed ~~!!!" << std::endl;
 
 	// Setup the Subscriber
-	wheel_speed_sub_ = node_.subscribe("/sensor/wheel_speed", 1, &EKFLocalizationNode::onWheelSpeed, this);
+        wheel_speed_sub_ = node_.subscribe("/chassis_data", 1, &EKFLocalizationNode::onWheelSpeed, this);
 	tag_pose_sub_ = node_.subscribe("/tag_detections", 1, &EKFLocalizationNode::onTagPoseArray, this);
 	imu_sub_ = node_.subscribe("/sensor/imu", 1, &EKFLocalizationNode::onIMU, this);
 	steering_angle_sub_ = node_.subscribe("/command/steering_angle", 1, &EKFLocalizationNode::onSteeringAngle, this);
@@ -62,15 +62,15 @@ bool EKFLocalizationNode::init()
 }
 
 // May add Serialization Later ~~~
-void EKFLocalizationNode::onWheelSpeed(const std_msgs::Float64::ConstPtr &msg)
+void EKFLocalizationNode::onWheelSpeed(const apriltag_ekf_localization::Chassis_data::ConstPtr &msg)
 {
 	std::lock_guard<std::mutex> guard(wheel_speed_mutex_);
-	wheel_speed_ = msg->data;
+        wheel_speed_ = msg->speed;
 	// debug
 	std::cout << "Wheel Speed Received  ~~~" << std::endl;
 }
 
-void EKFLocalizationNode::onIMU(const std_msgs::Float64::ConstPtr &msg)
+void EKFLocalizationNode::onIMU(const std_msgs::Float32::ConstPtr &msg)
 {
 	std::lock_guard<std::mutex> guard(imu_mutex_);
 	yaw_rate_ = msg->data;

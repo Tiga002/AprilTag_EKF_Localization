@@ -8,10 +8,13 @@
 
 //#include <std_msgs/string.h>
 #include <std_msgs/Float64.h>
+#include <std_msgs/Float32.h>
 #include <sensor_msgs/Imu.h>
 
 #include "apriltag_ekf_localization/AprilTagDetection.h"
 #include "apriltag_ekf_localization/AprilTagDetectionArray.h"
+#include "apriltag_ekf_localization/Chassis_cmd.h"
+#include "apriltag_ekf_localization/Chassis_data.h"
 
 #include "EKFLocalizer.h"
 #include "data_type.h"
@@ -40,21 +43,21 @@ private:
 
    	/**
    	* @brief: CallBack Function for WheelEncoder
-    **/
-    void onWheelSpeed(const std_msgs::Float64::ConstPtr &msg);
+        **/
+        void onWheelSpeed(const apriltag_ekf_localization::Chassis_data::ConstPtr &msg);
 
-    /**
-    * @brief: CallBack Function for IMU 
-    **/
-    void onIMU(const std_msgs::Float64::ConstPtr &msg);
+        /**
+        * @brief: CallBack Function for IMU
+        **/
+        void onIMU(const std_msgs::Float32::ConstPtr &msg);
 
-    /**
-    * @brief: CallBack function for SteeringAngle Command
-    **/
-    void onSteeringAngle(const std_msgs::Float64::ConstPtr &msg);
+        /**
+        * @brief: CallBack function for SteeringAngle Command
+        **/
+        void onSteeringAngle(const std_msgs::Float64::ConstPtr &msg);
 
-    /**
-    * @brief: CallBack Function for TagPoseArray
+        /**
+        * @brief: CallBack Function for TagPoseArray
 	**/
 	void onTagPoseArray(const apriltag_ekf_localization::AprilTagDetectionArray::ConstPtr &msg);
 

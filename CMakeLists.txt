@@ -29,6 +29,8 @@ add_message_files(
   FILES
   AprilTagDetection.msg
   AprilTagDetectionArray.msg
+  Chassis_cmd.msg
+  Chassis_data.msg
 )
 
 generate_messages(
@@ -64,6 +66,8 @@ ${OpenCV_LIBS}
 ${EIGEN3_LIBS}
 )
 
+
+
 add_executable(ekf_localization_node
 src/EKFLocalizationNode.cpp)
 target_link_libraries(ekf_localization_node
@@ -72,3 +76,4 @@ target_link_libraries(ekf_localization_node
   ${OpenCV_LIBS}
   libjson11.a
 )
+add_dependencies(ekf_localization_node apriltag_ekf_localization_generate_messages_cpp)
