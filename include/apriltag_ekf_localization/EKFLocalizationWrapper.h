@@ -54,7 +54,7 @@ private:
         /**
         * @brief: CallBack function for SteeringAngle Command
         **/
-        void onSteeringAngle(const std_msgs::Float64::ConstPtr &msg);
+        void onSteeringAngle(const apriltag_ekf_localization::Chassis_cmd::ConstPtr &msg);
 
         /**
         * @brief: CallBack Function for TagPoseArray

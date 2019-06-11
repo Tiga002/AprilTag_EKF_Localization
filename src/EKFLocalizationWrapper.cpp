@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <math.h>
 #include <boost/regex.hpp>
 // Include ROS Library
 #include <ros/ros.h>
@@ -14,6 +15,10 @@
 #include <image_transport/image_transport.h>
 // Node's Header File
 #include "apriltag_ekf_localization/EKFLocalizationWrapper.h"
+
+
+#define DEG2RAD M_PI/180
+#define RAD2DEG 180/M_PI
 
 namespace ekf_localization_node_ns{
 EKFLocalizationNode::EKFLocalizationNode(ros::NodeHandle node, ros::NodeHandle private_nh)
@@ -73,15 +78,16 @@ void EKFLocalizationNode::onWheelSpeed(const apriltag_ekf_localization::Chassis_
 void EKFLocalizationNode::onIMU(const std_msgs::Float32::ConstPtr &msg)
 {
 	std::lock_guard<std::mutex> guard(imu_mutex_);
-	yaw_rate_ = msg->data;
+        yaw_rate_ = msg->data; // in deg/s
 	// debug
 	std::cout << "IMU Yaw Rate Received ~~~" << std::endl;
 }
 
-void EKFLocalizationNode::onSteeringAngle(const std_msgs::Float64::ConstPtr &msg)
+void EKFLocalizationNode::onSteeringAngle(const apriltag_ekf_localization::Chassis_cmd::ConstPtr &msg)
 {
 	std::lock_guard<std::mutex> guard(steering_angle_mutex_);
-	steering_angle_ = msg->data;
+        steering_angle_ = msg->servo_turn;  // in degree
+        steering_angle_ = steering_angle_ * static_cast<double>(DEG2RAD); // In radian
 	// debug
 	std::cout << "Steering Angle Command Received ~~~~~" << std::endl;
 }
