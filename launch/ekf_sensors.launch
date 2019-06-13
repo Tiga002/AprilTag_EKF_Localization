@@ -1,0 +1,4 @@
+<launch>
+        <!-- Starts the IMU -->
+        <node pkg="rosserial_python" name="serial_node" type="serial_node.py" _port="/dev/ttyUSB0" />  
+</launch>

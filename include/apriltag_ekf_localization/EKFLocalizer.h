@@ -130,8 +130,8 @@ namespace ekf_localization_node_ns
 		// Boolean for checking information received
 		bool wheel_speed_received_ = false;
 		bool yaw_rate_received_ = false;
-		bool tag_detections_received = false;
-		bool steering_angle_received = false;
+                bool tag_detections_received_ = false;
+                bool steering_angle_received_ = false;
 
 		//config file path
 		const std::string name_;

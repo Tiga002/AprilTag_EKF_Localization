@@ -37,8 +37,8 @@ struct PoseWithConvariance
 
 struct AprilTagDetection
 {
-	int id;
-	double size;
+        int id;
+        double size;
 	Pose pose;
 };
 

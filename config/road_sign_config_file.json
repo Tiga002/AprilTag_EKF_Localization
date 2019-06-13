@@ -1,59 +1,31 @@
 {
     "map_setting": {
-    	"num_of_tags": 5
+    	"num_of_tags": 1  
     },
 
     "tag_0": {
     	"ID" : 0,
-    	"Pos_X" : 10,
-    	"Pos_Y" : 10,
+    	"Pos_X" : 1.0,
+    	"Pos_Y" : 0.0,
     	"Direction": 0
     },
 
-    "tag_1": {
-        "ID" : 0,
-        "Pos_X" : -10,
-        "Pos_Y" : -10,
-        "Direction": 0
-    },
-
-    "tag_2": {
-        "ID" : 0,
-        "Pos_X" : 5,
-        "Pos_Y" : 5,
-        "Direction": 0
-    },
-
-    "tag_3": {
-        "ID" : 0,
-        "Pos_X" : -5,
-        "Pos_Y" : -5,
-        "Direction": 0
-    },
-
-    "tag_4": {
-        "ID" : 0,
-        "Pos_X" : 2,
-        "Pos_Y" : 2,
-        "Direction": 0
-    },
-
     "process_covariance" : {
-    	"a1" : 0,
-    	"a2" : 0,
-    	"a3" : 0,
-    	"a4" : 0,
-    	"a5" : 0,
-    	"a6" : 0,
-    	"a7" : 0,
-    	"a8" : 0,
-    	"a9" : 0
+    	"a1" : 0.02,
+    	"a2" : 0.02,
+    	"a3" : 0.02,
+    	"a4" : 0.02,
+    	"a5" : 0.02,
+    	"a6" : 0.02,
+    	"a7" : 0.02,
+    	"a8" : 0.02,
+    	"a9" : 0.02
     },
 
     "camera_base_offset" : {
-    	"x" : 0,
-    	"y" : 0,
-    	"z" : 0
+    	"x" : 10,
+    	"y" : 0.035,
+    	"z" :10
     },
 
     "measurement_covariance" : {

@@ -68,6 +68,10 @@ private:
 	**/
 	void onTimer(const ros::TimerEvent& event);
 
+
+        visualization_msgs::Marker ConverterMarker(
+            const std::vector<cv::Point2f> &data);
+
 	/*****************************************************************
 								Private Attributes
 	*****************************************************************/
@@ -89,6 +93,8 @@ private:
 	ros::Publisher location_pub_;
 	ros::Publisher vehicle_visualization_pub_;
 	ros::Publisher tag_locations_visualization_pub_;
+        ros::Publisher moved_path_visualization_pub_;
+        ros::Publisher detected_tag_locations_visualization_pub_;
 	
 	ros::Timer timer_;
 
@@ -107,6 +113,9 @@ private:
 
 	std::mutex steering_angle_mutex_;
 	double steering_angle_;
+
+        // Create a vector for tracking the moved path
+        std::vector<cv::Point2f> moved_path;
 };
 
 

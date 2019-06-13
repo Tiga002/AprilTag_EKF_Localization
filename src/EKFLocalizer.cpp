@@ -38,6 +38,9 @@ bool EKFLocalizer::Init(const std::string& config_file)
 	// 3.Reset all the system Matrixes
 	Xt_.setZero(); // Xt = [0,0,0]^T
 	Pt_.setZero();
+        Pt_(0,0) = 1.0;
+        Pt_(1,1) = 1.0;
+        Pt_(2,2) = 1.0;
 
 	return true;
 }
@@ -46,28 +49,46 @@ bool EKFLocalizer::UpdateWheelSpeed(double wheel_speed)
 {
 	wheel_speed_ = wheel_speed;
 	wheel_speed_received_ = true;
+        // debug
+        std::cout << "Wheel Speed Received  ~~~" << std::endl;
 	return true;
 }
 
 bool EKFLocalizer::UpdateYawRate(double yaw_rate)
 {
-	yaw_rate_ = yaw_rate;
+        yaw_rate_ = yaw_rate * DEG2RAD;
+        // Revert the Rotation as --> Right Thumb Rule --> AntiClockwise(+)
+        yaw_rate_ = yaw_rate_ * -1.0;
 	yaw_rate_received_ = true;
+        // debug
+        std::cout << "IMU Yaw Rate Received ~~~" << std::endl;
 	return true;
 }
 
 bool EKFLocalizer::UpdateSteeringAngle(double steering_angle)
 {
 	steering_angle_ = steering_angle;
-	steering_angle_received = true;
+        //Steering angle Low-PassFilter
+                if(steering_angle_* static_cast<double>(RAD2DEG) <= 1)
+            if(steering_angle_* static_cast<double>(RAD2DEG) >= -1)
+                steering_angle_ = 0;
+        steering_angle_received_ = true;
+        // debug
+        std::cout << "Steering Angle Command Received ~~~~~" << std::endl;
 	return true;
 }
 
 bool EKFLocalizer::UpdateTagDetections(std::vector<ekf_localization_node_ns::AprilTagDetection> tag_detections)
 {
 	tag_detections_ = tag_detections;
-	tag_detections_received = true;
-	return true;
+        if(tag_detections_.empty())
+            tag_detections_received_ = false;
+        else
+            tag_detections_received_ = true;
+        // debug
+        std::cout << "Tag Detections Received ~~~" << std::endl;
+        std::cout << "Tag Detections size: " << tag_detections_.size() << std::endl;
+        return tag_detections_received_;
 }
 
 bool EKFLocalizer::GetJsonObjectFromConfigFile(const std::string& config_file, json11::Json* json)
@@ -291,7 +312,7 @@ bool EKFLocalizer::ReadTagGroundTruth(const std::string& config_file)
 bool EKFLocalizer::Locate(ekf_localization_node_ns::PoseWithConvariance* vehicle_position)
 {
 	// Prediction
-	if(wheel_speed_received_ == true && yaw_rate_received_ == true && steering_angle_received == true)
+        if(wheel_speed_received_ == true && yaw_rate_received_ == true && steering_angle_received_ == true)
 	{
 		// debug
 		std::cout << "wheel_speed, yaw_rate and steering_angle received. Prediction Starts ~~~" << std::endl;
@@ -299,7 +320,7 @@ bool EKFLocalizer::Locate(ekf_localization_node_ns::PoseWithConvariance* vehicle
 	}
 
 	// Correction (only when tag detected)
-	if(tag_detections_received == true)
+        if(tag_detections_received_ == true)
 	{
 		// debug
 		std::cout << "Tags Detected, Correction Starts ~~~" << std::endl;
@@ -308,10 +329,18 @@ bool EKFLocalizer::Locate(ekf_localization_node_ns::PoseWithConvariance* vehicle
 	else
 		std::cout << "Tags aren't detected. Localization based on IMU/Encoder ~~~" << std::endl;
 
-	// For Debug
-	std::cout << "State X = \n" << Xt_ << std::endl;
-	std::cout << "Corvariance P = \n" << Pt_ << std::endl;
+        // For Debug`
+        // DEBUG
+        std::cout << " ================= Current Vehicle Status ==========================" << std::endl;
+        std::cout << "Vehicle Speed: " << wheel_speed_ << std::endl;
+        std::cout << "Yaw Rate: " << yaw_rate_ << std::endl;
+        std::cout << "Steering Angle: " << steering_angle_;
+        std::cout << " " << std::endl;
 
+        std::cout << "State X = \n" << Xt_ << std::endl;
+        std::cout << "Corvariance P = \n" << Pt_ << std::endl;
+        if(Xt_(0,0) < 0)
+            return false;
 	vehicle_position->pose.position.x = Xt_(0,0);
 	vehicle_position->pose.position.y = Xt_(1,0);
 	vehicle_position->pose.position.z = 0.0;
@@ -536,7 +565,7 @@ int EKFLocalizer::Measure(std::vector<Measurement_Z>& measurements_z, const int&
 		
 		double r = sqrt(measured_x*measured_x + measured_y*measured_y);
 		double phi = atan2(measured_y, measured_x);
-		int id = tag_detections.at(i).id;  // id of the tag
+                int id = tag_detections.at(i).id;  // id of the tag
 
 		// Push Back the Valid Measurement to the vector holding the measurements
 		measurements_z.push_back(Measurement_Z(id, r, phi));
@@ -571,9 +600,9 @@ visualization_msgs::Marker EKFLocalizer::VisualizeVehicle()
 	vehicle_marker.pose.position.y = Xt_(1,0);
 	vehicle_marker.pose.position.z = 0.0;
 	vehicle_marker.pose.orientation = tf::createQuaternionMsgFromYaw(Xt_(2,0));
-	vehicle_marker.scale.x = 0.5;
-	vehicle_marker.scale.y = 0.5;
-	vehicle_marker.scale.z = 0.5;
+        vehicle_marker.scale.x = 0.25;
+        vehicle_marker.scale.y = 0.25;
+        vehicle_marker.scale.z = 0.25;
 	vehicle_marker.color.a = 0.8;
 	vehicle_marker.color.r = 1.0;
 	vehicle_marker.color.g = 0.0;
@@ -600,9 +629,9 @@ visualization_msgs::MarkerArray EKFLocalizer::VisualizeTagLocations()
 		tag_marker.pose.position.y = tag_ground_truth_.at(i).Pos_Y;
 		tag_marker.pose.position.z = 0.0;
 		tag_marker.pose.orientation = tf::createQuaternionMsgFromYaw(tag_ground_truth_.at(i).Direction);
-		tag_marker.scale.x = 1;
-		tag_marker.scale.y = 1;
-		tag_marker.scale.z = 1;
+                tag_marker.scale.x = 0.25;
+                tag_marker.scale.y = 0.25;
+                tag_marker.scale.z = 0.25;
 		tag_marker.color.a = 1;
 		tag_marker.color.r = 0.0;
 		tag_marker.color.g = 0.0;
